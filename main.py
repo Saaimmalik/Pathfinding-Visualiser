@@ -2,7 +2,7 @@ import pygame
 import math
 from queue import PriorityQueue
 
-WIDTH = 800
+WIDTH = 600
 WIN = pygame.display.set_mode((WIDTH, WIDTH))
 pygame.display.set_caption("A* Path Finding Algorithm")
 
@@ -45,8 +45,11 @@ class Node:
     def is_end(self):
         return self.colour == TURQUOISE
 
+    def make_start(self):
+        self.colour = ORANGE
+
     def reset(self):
-        self.colour == WHITE
+        self.colour = WHITE
 
     def make_closed(self):
         self.colour = RED
@@ -67,7 +70,18 @@ class Node:
         pygame.draw.rect(win, self.colour, (self.x, self.y, self.width, self.width))
 
     def update_neighbour(self, grid):
-        pass
+        self.neighbours = []
+        if self.row <self.total_rows - 1 and not grid[self.row + 1][self.col].is_barroer(): #Down
+            self.neighbours.append(grid[self.row + 1][self.col])
+
+        if self.row > 0 and not grid[self.row - 1][self.col].is_barroer(): #up
+                    self.neighbours.append(grid[self.row - 1][self.col])
+
+        if self.col <self.total_rows - 1 and not grid[self.row][self.col -1].is_barroer(): #left
+                    self.neighbours.append(grid[self.row][self.col - 1])
+
+        if self.col > 0 and not grid[self.row][self.col + 1].is_barroer(): #right
+                    self.neighbours.append(grid[self.row][self.col + 1])
 
     def __it__(self, other):
         return False   
@@ -77,6 +91,18 @@ def h(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
     return abs(x1 - x2) + abs(y1-y2)
+
+def algorithm(draw, grid, start, end):
+    count = 0
+    open_set = PriorityQueue()
+    open_set.put((0, count, start))
+    came_from - {}
+    g_score = {node: float("inf") for row in grin for node in row}
+    g_score[start] = 0
+    f_score = {node: float("inf") for row in grin for node in row}
+    f_score[start] =  h(start.get_pos(), end.get_pos())
+
+    open_set_hash = start
 
 def make_grid(rows, width):
     grid = []
@@ -98,7 +124,7 @@ def draw_grid(win, rows, width):
             pygame.draw.line(win, GREY, (j * gap, 0), (j * gap, width))
 
 
-def draw(win, grid, rows, width)
+def draw(win, grid, rows, width):
     win.fill(WHITE)
 
     for row in grid:
@@ -115,5 +141,60 @@ def get_clicked_pos(pos, rows, width):
     col = x // gap
     return row, col
 
+def main(win, width):
+    ROWS = 50
+    grid = make_grid(ROWS, width)
+
+    start=None
+    end = None
+
+    run = True
+    started = False
+    while run:
+        draw(win, grid, ROWS, width)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+            if started:
+                continue
+
+            if pygame.mouse.get_pressed()[0]:
+                pos = pygame.mouse.get_pos()
+                row, col = get_clicked_pos(pos, ROWS, width)
+                node = grid[row][col]
+                if not start and node != end:
+                    start = node
+                    start.make_start()
+
+                elif not end and node != start:
+                    end = node
+                    end.make_end()
+
+                elif node != end and node != start:
+                    node.make_barrier()
 
 
+            elif pygame.mouse.get_pressed()[2]:
+                pos = pygame.mouse.get_pos()
+                row, col = get_clicked_pos(pos, ROWS, width)
+                node = grid[row][col]
+                node.reset()
+                if node == start:
+                    start = None
+                elif node == end:
+                    end = None
+    
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and not started:
+                    for row in grid:
+                        for node in row:
+                            row.update_neighbours()
+
+                    algorithm(Lambda: draw(win, grid, ROWS, width), grid, start, end)
+                    x = Lambda: 
+                    
+
+
+    pygame.quit()
+main(WIN, WIDTH)
