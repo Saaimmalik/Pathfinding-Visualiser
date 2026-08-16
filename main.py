@@ -69,7 +69,7 @@ class Node:
     def draw(self, win):
         pygame.draw.rect(win, self.colour, (self.x, self.y, self.width, self.width))
 
-    def update_neighbour(self, grid):
+    def update_neighbours(self, grid):
         self.neighbours = []
         # DOWN
         if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier():
@@ -231,7 +231,7 @@ def main(win, width):
                 if event.key == pygame.K_SPACE and start and end:
                     for row in grid:
                         for node in row:
-                            node.update_neighbour(grid)
+                            node.update_neighbours(grid)
 
                     algorithm(lambda: draw(win, grid, ROWS, width), grid, start, end)
                     
